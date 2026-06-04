@@ -11,6 +11,7 @@ pub enum AgentEvent {
     ActionFinished(Action, ExecutionResult),
     ConversationReset,
     Error(String),
+    TaskFinished,
 }
 
 pub struct Agent {
@@ -24,7 +25,7 @@ impl Agent {
     pub fn new(model: OpenAIModel, env: LocalEnvironment) -> Self {
         let system_prompt = "You are a helpful AI software engineer. \
             You can use bash commands by wrapping them in ```bash code blocks. \
-            To reset the conversation, use the command RESET_AGENT_STATE. \
+            To reset the conversation, use the command [[RESET]]. \
             Always explain your reasoning before executing a command."
             .to_string();
 
@@ -63,6 +64,7 @@ impl Agent {
             };
 
             let mut full_content = String::new();
+            let mut stream_error = false;
             while let Some(delta) = stream.next().await {
                 match delta {
                     Ok(text) => {
@@ -71,9 +73,14 @@ impl Agent {
                     }
                     Err(e) => {
                         let _ = event_tx.send(AgentEvent::Error(format!("Stream error: {}", e)));
+                        stream_error = true;
                         break;
                     }
                 }
+            }
+
+            if stream_error {
+                break;
             }
 
             {
@@ -129,5 +136,6 @@ impl Agent {
                 break;
             }
         }
+        let _ = event_tx.send(AgentEvent::TaskFinished);
     }
 }

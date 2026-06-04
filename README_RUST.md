@@ -27,21 +27,25 @@ This is a Rust implementation of the minimal AI software engineering agent, feat
    ```bash
    export MSWEA_MODEL_NAME='gpt-4o'
    ```
-3. Run the application:
+3. (Optional) Set a custom base URL:
+   ```bash
+   export OPENAI_BASEURL='https://your-proxy-endpoint/v1'
+   ```
+4. Run the application:
    ```bash
    cargo run
    ```
 
 ## TUI Shortcuts
-- **Enter**: Submit task / input.
-- **Up/Down Arrows**: Scroll transcript.
-- **Ctrl-F**: Toggle "Follow" (auto-scroll to bottom).
+- **Enter**: Submit task / input (only when not busy).
+- **Up/Down Arrows**: Scroll transcript manually.
+- **Ctrl-F**: Toggle "Follow" (auto-scroll to bottom as text streams).
 - **Esc**: Exit the application.
 
 ## Custom Tools
 The agent uses text-based markers to interact with the system:
 - **Bash Execution**: Wrap commands in ` ```bash ... ``` ` blocks.
-- **Reset State**: Use the keyword `RESET_AGENT_STATE` to clear history.
+- **Reset State**: Use the keyword `[[RESET]]` to clear history.
 
 ---
 

@@ -112,7 +112,7 @@ impl OpenAIModel {
         let mut start_index = 0;
         while start_index < content.len() {
             let next_bash = content[start_index..].find("```bash");
-            let next_reset = content[start_index..].find("RESET_AGENT_STATE");
+            let next_reset = content[start_index..].find("[[RESET]]");
 
             match (next_bash, next_reset) {
                 (Some(b), Some(r)) if b < r => {
@@ -141,7 +141,7 @@ impl OpenAIModel {
                 }
                 (Some(_), Some(r)) | (None, Some(r)) => {
                     actions.push(Action::Reset);
-                    start_index += r + "RESET_AGENT_STATE".len();
+                    start_index += r + "[[RESET]]".len();
                 }
                 (None, None) => break,
             }
