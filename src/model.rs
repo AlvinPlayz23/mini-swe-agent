@@ -39,7 +39,10 @@ impl OpenAIModel {
     pub fn new(model_name: Option<String>) -> Self {
         let api_key = env::var("OPENAI_API_KEY").ok();
         let client = api_key.map(|key| {
-            let config = async_openai::config::OpenAIConfig::new().with_api_key(key);
+            let mut config = async_openai::config::OpenAIConfig::new().with_api_key(key);
+            if let Ok(base_url) = env::var("OPENAI_BASEURL") {
+                config = config.with_api_base(base_url);
+            }
             Client::with_config(config)
         });
 
